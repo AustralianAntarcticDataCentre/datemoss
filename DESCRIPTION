@@ -1,0 +1,13 @@
+Package: DateMoss
+Type: Package
+Title: Chronologies and Growth Rates of Moss
+Version: 0.0-2
+Author: Ben Raymond, Simon Wotherspoon
+Maintainer: Ben Raymond <Ben.Raymond@aad.gov.au>
+Depends:
+    coda
+Description: Estimating chronologies and growth rates of moss (or similar)
+    samples based on radiocarbon dating.
+NeedsCompilation: no
+ByteCompile: yes
+License: GPL-3
