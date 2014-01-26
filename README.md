@@ -12,7 +12,7 @@ install.packages("coda")
 install.packages("DateMoss",repos="http://rforge.net/")
 ```
 
-Source code can be obtained from the github page [[https://github.com/antarcticben/datemoss]]
+Source code can be obtained from the github page https://github.com/antarcticben/datemoss
 
 
 ## TODO
