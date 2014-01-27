@@ -5,15 +5,14 @@ R package for MCMC estimation of chronologies and growth rates of moss
 
 ## Installing
 
-Binaries are be available from RForge for easy installation in R: 
+Binaries are available from RForge for easy installation in R: 
 
 ```s
 install.packages("coda")
 install.packages("DateMoss",repos="http://rforge.net/")
 ```
 
-Source code can be obtained from the github page https://github.com/antarcticben/datemoss
-
+(Note that currently there is no functional code!)
 
 ## TODO
 
