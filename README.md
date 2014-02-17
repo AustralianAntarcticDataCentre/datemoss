@@ -12,6 +12,13 @@ install.packages(c("coda","stringr","zoo","Hmisc"))
 install.packages("DateMoss",repos="http://rforge.net/")
 ```
 
+On Windows machines, the second line may need to be replaced with:
+
+```s
+install.packages("DateMoss",repos="http://rforge.net/",type="source")
+```
+
+
 ## TODO
 
 - Sampler
