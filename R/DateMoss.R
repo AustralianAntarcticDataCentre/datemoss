@@ -1,10 +1,10 @@
 #' Chronologies and growth rates of moss
 #'
-#' Provides facilities for e Estimating chronologies and growth rates
+#' Provides facilities for estimating chronologies and growth rates
 #' of moss (or similar) samples based on radiocarbon dating.
 #'
-#' @name MossDate-package
-#' @import coda
+#' @name DateMoss-package
+#' @import coda stringr zoo Hmisc
 #' @docType package
 #' @author B. Raymond, S. Wotherspoon
 NULL

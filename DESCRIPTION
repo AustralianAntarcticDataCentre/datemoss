@@ -12,3 +12,6 @@ NeedsCompilation: no
 URL: \url{http://rforge.net/datemoss/}
 ByteCompile: yes
 License: GPL-3
+Collate:
+    'DateMoss.R'
+    'read_calibration.R'
