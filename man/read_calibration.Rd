@@ -24,9 +24,6 @@
   Read atmospheric 14C calibration data file
 }
 \examples{
-cal=read_calibration()
-}
-\author{
-  B. Raymond, S. Wotherspoon
+\dontrun{cal=read_calibration()}
 }
 

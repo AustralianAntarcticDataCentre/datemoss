@@ -5,8 +5,7 @@
 #' @param fudge.factor numeric: (experimental) scale the PMC values by this value
 #'
 #' @return A data frame of results
-#' @author B. Raymond, S. Wotherspoon
-#' @examples cal=read_calibration()
+#' @examples \dontrun{cal=read_calibration()}
 #' @export
 
 read_calibration=function(filename=NULL,presmooth.width=NA,fudge.factor=NA) {
