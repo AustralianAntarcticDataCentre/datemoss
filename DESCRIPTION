@@ -5,7 +5,10 @@ Version: 0.0-4
 Author: Ben Raymond, Simon Wotherspoon
 Maintainer: Ben Raymond <Ben.Raymond@aad.gov.au>
 Depends:
-    coda
+    coda,
+    stringr,
+    zoo,
+    Hmisc
 Description: Estimating chronologies and growth rates of moss (or similar)
     samples based on radiocarbon dating.
 NeedsCompilation: no
