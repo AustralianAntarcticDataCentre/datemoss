@@ -10,7 +10,7 @@
 
 read_calibration=function(filename=NULL,presmooth.width=NA,fudge.factor=NA) {
     if (is.null(filename)) {
-        filename=system.file("extdata", "atmospheric_14C.csv", package="datemoss")
+        filename=system.file("extdata", "atmospheric_14C.csv", package="DateMoss")
         x14c=read.table(filename,sep=',',header=TRUE)
         ## add extrapolated data for 2012 and 2013 so we don't hit missing data problems
         ## dates are being dealt with as fractional year values
