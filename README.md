@@ -15,7 +15,7 @@ install.packages("DateMoss",repos="http://rforge.net/")
 On Windows machines, the second line may need to be replaced with:
 
 ```s
-install.packages("DateMoss",repos="http://rforge.net/",type="source")
+install.packages("DateMoss",repos="http://rforge.net/",type="source",INSTALL_opts="--no-multiarch")
 ```
 
 
@@ -25,7 +25,6 @@ install.packages("DateMoss",repos="http://rforge.net/",type="source")
   - Allow for multiple chains
   - Coda conversion
 - Data
-  - Read reference data
   - Read data format
   - Interpolating area under curve
 
