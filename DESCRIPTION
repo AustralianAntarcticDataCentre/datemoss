@@ -21,3 +21,5 @@ Collate:
     'read_calibration.R'
     'read_segment_data.R'
     'estimate_initial.R'
+    'fit_dates.R'
+    'seg_c14fun.R'
