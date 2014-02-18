@@ -1,6 +1,6 @@
 #' Initialize date estimates
 #'
-#' @param segments dataframe: the segment data, as returned by read_segment_data
+#' @param segments dataframe: the segment data, as returned by read_segment_data()
 #' @param tmin numeric: the earliest allowable date (specify as a fractional year)
 #' @param method string: method to use for generating the initial estimates. Methods other than "random" (the default) are experimental
 #'

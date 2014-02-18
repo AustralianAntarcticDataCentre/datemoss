@@ -3,7 +3,7 @@
 #' Uses an MCMC method to estimate date span of each segment, given the measured d14C for each segment and the atmospheric d14C curve
 #'
 #' @param segments dataframe: the segment data, as returned by read_segment_data()
-#' @param f0 numeric: the initial estimate, as returned by estimate_initial()
+#' @param f0 numeric: vector of initial date estimates, as returned by estimate_initial()
 #' @param cal dataframe: the calibration data, as returned by read_calibration()
 #' @param mcmc.thin numeric: thinning parameter for MCMC fitting
 #' @param mcmc.iters numeric: number of iterations for MCMC fitting
