@@ -1,14 +1,15 @@
 Package: DateMoss
 Type: Package
 Title: Chronologies and Growth Rates of Moss
-Version: 0.0-4
+Version: 0.0-5
 Author: Ben Raymond, Simon Wotherspoon
 Maintainer: Ben Raymond <Ben.Raymond@aad.gov.au>
 Depends:
     coda,
     stringr,
     zoo,
-    Hmisc
+    Hmisc,
+    XLConnect
 Description: Estimating chronologies and growth rates of moss (or similar)
     samples based on radiocarbon dating.
 NeedsCompilation: no
@@ -18,3 +19,4 @@ License: GPL-3
 Collate:
     'DateMoss.R'
     'read_calibration.R'
+    'read_segment_data.R'

@@ -1,5 +1,7 @@
 export(read_calibration)
+export(read_segment_data)
 import(coda)
 import(Hmisc)
 import(stringr)
+import(XLConnect)
 import(zoo)
