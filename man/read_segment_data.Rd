@@ -4,7 +4,7 @@
 \usage{
   read_segment_data(filename, sheetname = NULL,
     sample_column_names = c("Lab ID", "Moss species", "Sample ID"),
-    columns_to_return = c("Lab ID", "Moss species", "Sample ID", "Depth (mm)", "Segment length (mm)", "pMC", "pMC_sd"))
+    columns_to_return = NULL)
 }
 \arguments{
   \item{filename}{string: the Excel file to read}
@@ -17,7 +17,8 @@
   are used to identify data rows within the datasheet}
 
   \item{columns_to_return}{string: the columns to extract
-  from the datasheet}
+  from the datasheet. If NULL, any column that does not
+  have an NA header value is returned}
 }
 \value{
   A data frame of results
