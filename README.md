@@ -5,18 +5,14 @@ R package for MCMC estimation of chronologies and growth rates of moss
 
 ## Installing
 
-Binaries are available from RForge for easy installation in R:
+The package source is available from RForge for easy installation in R:
 
 ```s
-install.packages(c("coda","stringr","zoo","Hmisc"))
-install.packages("DateMoss",repos="http://rforge.net/")
-```
-
-On Windows machines, the second line may need to be replaced with:
-
-```s
+install.packages(c("coda","stringr","zoo","Hmisc","XLConnect"))
 install.packages("DateMoss",repos="http://rforge.net/",type="source",INSTALL_opts="--no-multiarch")
 ```
+
+Warning: only tested using Windows and 64-bit R
 
 
 ## TODO
