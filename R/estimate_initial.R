@@ -2,12 +2,13 @@
 #'
 #' @param segments dataframe: the segment data, as returned by read_segment_data()
 #' @param tmin numeric: the earliest allowable date (specify as a fractional year)
-#' @param method string: method to use for generating the initial estimates. Methods other than "random" (the default) are experimental
+#' @param method string: method to use for generating the initial estimates, one of "random" [default], "estimate", or "oxcal". Methods other than "random" are experimental
+#' @param cal dataframe: the calibration data, as returned by read_calibration(). Only needed for method "estimate"
 #'
 #' @return A vector of date estimates (specified as fractional years)
 #' @export
 
-estimate_initial=function(segments,tmin,method="random") {
+estimate_initial=function(segments,tmin,method="random",cal=NULL) {
     ## starting estimate of the dates of the segment boundaries
 
     method.options=c('oxcal','estimate','random')
@@ -20,8 +21,8 @@ estimate_initial=function(segments,tmin,method="random") {
     } else if (method=='estimate') {
         t0=rep(NA,nrow(segments))
         last_date=Inf
-        calfine.t=seq(from=min(x14c$Year),to=max(x14c$Year), by=0.1)
-        calfine.14c=approx(x=x14c$Year,y=x14c$PMCsmoothed,xout=calfine.t)$y
+        calfine.t=seq(from=min(cal$x14c$Year),to=max(cal$x14c$Year), by=0.1)
+        calfine.14c=approx(x=cal$x14c$Year,y=cal$x14c$PMCsmoothed,xout=calfine.t)$y
         for (sidx in 1:nrow(segments)) {
             ## find dates where calibration PMC value is close to segment value
             ##fz=uniroot(function(z){ approx(x=x14c$Year,y=x14c$PMC,xout=z)$y-segments$pmc[sidx] },interval=range(x14c$Year))
