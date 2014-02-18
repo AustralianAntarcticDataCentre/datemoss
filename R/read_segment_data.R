@@ -3,13 +3,12 @@
 #' @param filename string: the Excel file to read
 #' @param sheetname string: the name of the worksheet to read. If NULL, all worksheets are checked and the first one with a header row is used
 #' @param sample_column_names string: the column names that are used to identify data rows within the datasheet
-#' @param columns_to_return string: the columns to extract from the datasheet
+#' @param columns_to_return string: the columns to extract from the datasheet. If NULL, any column that does not have an NA header value is returned
 #'
 #' @return A data frame of results
 #' @export
 
-read_segment_data=function(filename,sheetname=NULL,sample_column_names=c("Lab ID", "Moss species", "Sample ID"),columns_to_return=c("Lab ID","Moss species","Sample ID","Depth (mm)","Segment length (mm)","pMC","pMC_sd")) {
-    ## these column names define a sample. We look for these names to find our header row. Also, these are used to decide when the data-table part of the sheet finishes (the first row where all three of these columns are blank, after the header row)
+read_segment_data=function(filename,sheetname=NULL,sample_column_names=c("Lab ID", "Moss species", "Sample ID"),columns_to_return=NULL) {
 
     if (nchar(sheetname)==0 || is.null(sheetname)) {
         ## if no sheet specified, find all sheets in the workbook
@@ -17,6 +16,7 @@ read_segment_data=function(filename,sheetname=NULL,sample_column_names=c("Lab ID
         sheetname=getSheets(workbook)
     }
 
+    ## the columns sample_column_names define a sample. We look for these names to find our header row. Also, these are used to decide when the data-table part of the sheet finishes (the first row where all three of these columns are blank, after the header row)
     for (sheet_index in 1:length(sheetname)) {
         this_sheet=readWorksheetFromFile(filename, sheet = sheetname[sheet_index], header = FALSE)
         this_sheet_full=this_sheet ## keep copy of the full thing, too
@@ -46,10 +46,28 @@ read_segment_data=function(filename,sheetname=NULL,sample_column_names=c("Lab ID
     } else {
         this_sheet=this_sheet[1:(first_blank_row-1),]
     }
-    columns_idx=tolower(sheet_header) %in% tolower(columns_to_return)
+    if (!is.null(columns_to_return)) {
+        columns_idx=tolower(sheet_header) %in% tolower(columns_to_return)
+    } else {
+        ##return all columns that do no have an NA header
+        columns_idx=!is.na(sheet_header)
+    }
 
     this_sheet=this_sheet[,columns_idx]
-    names(this_sheet)=tolower(sheet_header[columns_idx])
+    sheet_header=tolower(sheet_header[columns_idx]) ## lower case
+    sheet_header=str_replace_all(sheet_header,"[[:blank:][:punct:]]+","_") ## replace brackets, spaces, and other special characters with underscore
+    sheet_header=str_replace(sheet_header,"_$","") ## remove trailing underscores
+    sheet_header=str_replace(sheet_header,"^_","") ## remove leading underscores
+    names(this_sheet)=sheet_header
+    ## convert columns to appropriate data type: without this step, they will all be char because XLConnect has read the entire worksheet including the header row, so no columns will appear to be e.g. numeric
+    for (ci in 1:ncol(this_sheet)) {
+        this_sheet[,ci]=type.convert(this_sheet[,ci])
+        ## coerce some types to be more generic
+        if (is.integer(this_sheet[,ci])) {
+            this_sheet[,ci]=as.numeric(this_sheet[,ci])
+        }
+        ## maybe also change factors back to strings, but leave as-is for now
+    }
 
     ## also extract date and location collected, and add as attributes of this_sheet
     idx=which(this_sheet_full=="Date collected",arr.ind=TRUE)
