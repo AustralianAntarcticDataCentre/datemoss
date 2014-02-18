@@ -1,7 +1,7 @@
 Package: DateMoss
 Type: Package
 Title: Chronologies and Growth Rates of Moss
-Version: 0.0-7
+Version: 0.0-8
 Author: Ben Raymond, Simon Wotherspoon
 Maintainer: Ben Raymond <Ben.Raymond@aad.gov.au>
 Depends:
@@ -23,3 +23,6 @@ Collate:
     'estimate_initial.R'
     'fit_dates.R'
     'seg_c14fun.R'
+    'datemoss_plot.R'
+    'fit_summary.R'
+    'get_growth_rate.R'

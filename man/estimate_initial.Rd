@@ -6,7 +6,7 @@
 }
 \arguments{
   \item{segments}{dataframe: the segment data, as returned
-  by read_segment_data}
+  by read_segment_data()}
 
   \item{tmin}{numeric: the earliest allowable date (specify
   as a fractional year)}

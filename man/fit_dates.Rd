@@ -9,8 +9,8 @@
   \item{segments}{dataframe: the segment data, as returned
   by read_segment_data()}
 
-  \item{f0}{numeric: the initial estimate, as returned by
-  estimate_initial()}
+  \item{f0}{numeric: vector of initial date estimates, as
+  returned by estimate_initial()}
 
   \item{cal}{dataframe: the calibration data, as returned
   by read_calibration()}
