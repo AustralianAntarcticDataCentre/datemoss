@@ -5,24 +5,10 @@ Version: 0.0-8
 Author: Ben Raymond, Simon Wotherspoon
 Maintainer: Ben Raymond <Ben.Raymond@aad.gov.au>
 Depends:
-    coda,
-    stringr,
-    zoo,
-    Hmisc,
-    XLConnect
+    coda
 Description: Estimating chronologies and growth rates of moss (or similar)
     samples based on radiocarbon dating.
 NeedsCompilation: no
 URL: \url{http://rforge.net/datemoss/}
 ByteCompile: yes
 License: GPL-3
-Collate:
-    'DateMoss.R'
-    'read_calibration.R'
-    'read_segment_data.R'
-    'estimate_initial.R'
-    'fit_dates.R'
-    'seg_c14fun.R'
-    'datemoss_plot.R'
-    'fit_summary.R'
-    'get_growth_rate.R'
