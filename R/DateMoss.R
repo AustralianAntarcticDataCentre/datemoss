@@ -351,7 +351,8 @@ growth.prior.gamma <- function(mean,sd,shape=(mean/sd)^2,rate=mean/sd^2) {
 ##' @title Quantiles
 ##' @param x a coda object
 ##' @param ... further arguments passed to quantile
-##' @return An arry of quantiles
+##' @return An array of quantiles
+##' @importFrom stats quantile
 ##' @export
 quantile.mcmc <- function(x,...) {
   t(apply(x,2,quantile,...))

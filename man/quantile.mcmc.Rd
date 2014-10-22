@@ -14,7 +14,7 @@
 \item{...}{further arguments passed to quantile}
 }
 \value{
-An arry of quantiles
+An array of quantiles
 }
 \description{
 Quantiles from a coda object
