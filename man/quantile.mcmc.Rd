@@ -20,7 +20,7 @@ An array of quantiles
 Quantiles from a coda object
 }
 \details{
-Converts an mcmc or mcmc.list object to a matrix and applies
-quantile.
+Converts an \code{mcmc} or \code{mcmc.list} object to a matrix and
+applies quantile.
 }
 

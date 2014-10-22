@@ -78,6 +78,12 @@ generateInitial <- function(lengths,tmin,tmax,chains=1L,max.growth=NULL) {
 
 ##' Estimate segment times and growth rates by MCMC
 ##'
+##' The two functions \code{metropolisDate0} and \code{metropolisDate}
+##' estimate the segment cut times by Metropolis sampling.  The
+##' \code{metropolisDate0} variant assumes the standard deviation of
+##' the PMC errors (\code{sigma}) is fixed, while
+##' \code{metropolisDate} Gibbs samples for \code{sigma}.
+##'
 ##' The user must supply the lengths \code{len} and mean carbon
 ##' concentrations \code{pmc} of the segments.  These must be supplied
 ##' in timewise order - oldest segment first and the segments must be
@@ -106,19 +112,146 @@ generateInitial <- function(lengths,tmin,tmax,chains=1L,max.growth=NULL) {
 ##' @param Year calibration data - (fractional) year of atmospheric
 ##' carbon measurement
 ##' @param PMC calibration data - percent modern carbon
-##' @param sigma standard deviation of PMC measurement errors (FIX
-##' description)
+##' @param sigma standard deviation of PMC errors
 ##' @param iters number of samples to draw.
 ##' @param thin rate at which to thin samples.
 ##' @param chains number of chains to sample.
 ##' @param log.prior function to calculate the contribution from each
 ##' segment to the log prior for growth rates, given segment times and
 ##' lengths.
+##' @param alpha shape parameter for the Gamma prior for tau
+##' @param beta rate parameter for the Gamma prior for tau
 ##' @param verbose report progress at prompt?
-##' @return A coda object describing the segment times.
+##' @return \code{metropolisDate0} returns a list containing a coda
+##' object describing the segment times.  \code{metropolisDate}
+##' returns a list containing a coda object describing the segment
+##' times and a coda object describing
 ##' @importFrom coda mcmc mcmc.list
 ##' @export
 metropolisDate <- function(ts.init,tmin,
+                           len,pmc,Year,PMC,
+                           sigma=4,iters=2000L,thin=25L,
+                           chains=if(is.list(ts.init)) length(ts.init) else 1L,
+                           log.prior=NULL,alpha=0.01,beta=0.01,
+                           verbose=interactive()) {
+
+  ## Ensure ordering of calibration data
+  PMC <- PMC[order(Year)]
+  Year <- Year[order(Year)]
+
+  ## Integrate calibration carbon concentrations by trapezoidal rule,
+  ## and construct interpolator
+  IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1L]+PMC[-length(PMC)])/2)))
+
+  ## Given the segment end times, calculate the expected average PMC
+  ## in each segment
+  segmentPMC <- function(ts) diff(IPMC(ts))/diff(ts)
+
+
+  ## Install uniform prior when none is given
+  if(is.null(log.prior)) {
+    log.prior <- function(ts,len) 0
+  }
+
+  ## Set up initial times
+  ts.init <- rep(if(is.list(ts.init)) ts.init else list(ts.init),length.out=chains)
+  n <- length(ts.init[[1L]])
+
+  ## List of chains
+  ch.times <- vector(mode="list",chains)
+  ch.sigma <- vector(mode="list",chains)
+
+  ## PARALLEL - parallelize over this loop
+  for(k1 in seq_len(chains)) {
+    ## Allocate storage for this chain
+    ch.ts <- matrix(0,iters,n)
+    ch.sg <- double(iters)
+
+    ## Initialize times for this chain
+    ts <- as.vector(ts.init[[k1]])
+
+
+    ## Output initial iteration count
+    if(verbose) {
+      cat("iter ",sprintf("%6d",1))
+      flush.console()
+    }
+
+    for(k2 in seq_len(iters)) {
+
+      ## Update iteration count
+      if(verbose && k2%%100==0) {
+        cat("\b\b\b\b\b\b");
+        cat(sprintf("%6d",k2));
+        flush.console()
+      }
+
+      for(k3 in seq_len(thin)) {
+
+        ## Gibbs sample for sigma
+        r <- pmc-segmentPMC(ts)
+        tau <- rgamma(1,alpha+(n-1)/2,beta+sum(r^2))
+        sigma <- 1/sqrt(tau)
+
+        ## Red-black update - update the times in two interleaved sets
+        for(rb in seq_len(2L)) {
+
+          ## Contribution to log posterior from each segment
+          logps <- log.prior(ts,len)
+          logps <- logps + ifelse(is.na(pmc),0,dnorm(pmc,segmentPMC(ts),sigma,log=T))
+
+          ## Indices to update
+          is <- seq.int(rb,n-1L,by=2L)
+
+          ## New proposal
+          lwr <- c(tmin,ts)[is]
+          upr <- ts[is+1L]
+          ts.new <- ts
+          ts.new[is] <- runif(length(is),lwr,upr)
+
+          ## Contribution to log posterior from each segment of proposal
+          logps.new <- log.prior(ts.new,len)
+          logps.new <- logps.new + ifelse(is.na(pmc),0,dnorm(pmc,segmentPMC(ts.new),sigma,log=T))
+
+          ## Metropolis-Hastings rule - which proposals are kept?
+          logp.is <- c(0,logps)[is]+logps[is]
+          logp.is.new <- c(0,logps.new)[is]+logps.new[is]
+          keep <- logp.is.new-logp.is > log(runif(length(is)))
+          is <- is[keep]
+          ts[is] <- ts.new[is]
+        }
+      }
+
+      ## Store this sample
+      ch.ts[k2,] <- ts
+      ch.sg[k2] <- sigma
+    }
+
+    ## Store this chain's samples
+    colnames(ch.ts) <- paste0("time",seq_len(n))
+    ch.times[[k1]] <- ch.ts
+    ch.sg <- as.matrix(ch.sg)
+    colnames(ch.sg) <- "sigma"
+    ch.sigma[[k1]] <- ch.sg
+    if(verbose) cat("\n")
+  }
+
+  ## Convert to a list of coda objects
+  if(chains==1L) {
+    list(times=mcmc(ch.times[[1L]],start=thin,thin=thin),
+         sigma=mcmc(ch.sigma[[1L]],start=thin,thin=thin))
+  } else {
+    list(times=do.call(mcmc.list,lapply(ch.times,mcmc,start=thin,thin=thin)),
+         sigma=do.call(mcmc.list,lapply(ch.sigma,mcmc,start=thin,thin=thin)))
+  }
+}
+
+
+
+
+##' @rdname metropolisDate
+##' @export
+metropolisDate0 <- function(ts.init,tmin,
                            len,pmc,Year,PMC,
                            sigma=4,iters=2000L,thin=25L,
                            chains=if(is.list(ts.init)) length(ts.init) else 1L,
@@ -217,11 +350,12 @@ metropolisDate <- function(ts.init,tmin,
 
   ## Convert to a list of coda objects
   if(chains==1L) {
-    mcmc(ch.times[[1L]],start=thin,thin=thin)
+    list(times=mcmc(ch.times[[1L]],start=thin,thin=thin))
   } else {
-    do.call(mcmc.list,lapply(ch.times,mcmc,start=thin,thin=thin))
+    list(times=do.call(mcmc.list,lapply(ch.times,mcmc,start=thin,thin=thin)))
   }
 }
+
 
 
 ##' Estimate growth rates from the estimated segment times
