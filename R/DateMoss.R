@@ -28,7 +28,7 @@ NULL
 ##' \code{F14C.sigma} \tab FIX ME. \cr
 ##' \code{D14C} \tab FIX ME. \cr
 ##' \code{F14C.sigma} \tab FIX ME. \cr
-##' \code{PMC} \tab FIX ME.
+##' \code{PMC} \tab Percent modern carbon.
 ##' }
 ##' @source Hua, Q., Barbetti, M. & Rakowski, A. Z. (2013).
 ##' Atmospheric radiocarbon for the period 1950-2010.
@@ -58,7 +58,7 @@ NULL
 ##' @param tmax the final date
 ##' @param chains the number of chains to generate initializations for
 ##' @param max.growth the maximum possible growth rate
-##' @return a list of vectors of dates
+##' @return a list of vectors of segment cut dates
 ##' @export
 generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
   n <- length(lengths)
@@ -85,8 +85,8 @@ generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
 ##'
 ##' The user must also supply atmospheric radiocarbon calibration data
 ##' as two vectors, \code{Year} the time of measurement in
-##' (fractional) years and \code{PMC} the recorded concentration of
-##' atmospheric radiocarbon.
+##' (fractional) years and \code{PMC} the recorded percentage of
+##' modern carbon.
 ##'
 ##' The user may also supply a function that computes the
 ##' contributions of each segment to the log prior.  This function
@@ -105,7 +105,7 @@ generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
 ##' oldest first)
 ##' @param Year calibration data - (fractional) year of atmospheric
 ##' carbon measurement
-##' @param PMC calibration data - atmospheric carbon concentration
+##' @param PMC calibration data - percent modern carbon
 ##' @param sigma standard deviation of C14 measurement errors (FIX
 ##' description)
 ##' @param iters number of samples to draw.
@@ -125,7 +125,9 @@ metropolisDate <- function(ts.init,tmin,
                            log.prior=NULL,
                            verbose=interactive()) {
 
-
+  ## Ensure ordering of calibration data
+  PMC <- PMC[order(Year)]
+  Year <- Year[order(Year)]
 
   ## Integrate calibration carbon concentrations by trapezoidal rule,
   ## and construct interpolator
@@ -259,7 +261,7 @@ growthRate <- function(times,lengths) {
 ##' @param times a fitted object returned by \code{metropolisDate}
 ##' @param Year calibration data - (fractional) year of atmospheric
 ##' carbon measurement
-##' @param PMC calibration data - atmospheric carbon concentration
+##' @param PMC calibration data - recorded percentage of modern carbon
 ##' @return a coda object describing the growth rates
 ##' @importFrom coda mcmc mcmc.list thin
 ##' @export
@@ -267,6 +269,8 @@ carbonContent <- function(times,Year,PMC) {
 
   ## Integrate calibration carbon concentrations by trapezoidal rule,
   ## and construct interpolator
+  PMC <- PMC[order(Year)]
+  Year <- Year[order(Year)]
   IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1]+PMC[-length(PMC)])/2)))
 
   ## Given the segment end times, calculate the expected average C14
