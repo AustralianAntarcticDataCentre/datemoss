@@ -11,7 +11,7 @@ carbonContent(times, Year, PMC)
 \item{Year}{calibration data - (fractional) year of atmospheric
 carbon measurement}
 
-\item{PMC}{calibration data - atmospheric carbon concentration}
+\item{PMC}{calibration data - recorded percentage of modern carbon}
 }
 \value{
 a coda object describing the growth rates

@@ -3,7 +3,7 @@
 \alias{generateInitial}
 \title{Initial Chronologies}
 \usage{
-generateInitial(lengths, tmin, tmax, chains = 1, max.growth = NULL)
+generateInitial(lengths, tmin, tmax, chains = 1L, max.growth = NULL)
 }
 \arguments{
 \item{lengths}{a vector of segment lengths (in timewise order)}
@@ -17,7 +17,7 @@ generateInitial(lengths, tmin, tmax, chains = 1, max.growth = NULL)
 \item{max.growth}{the maximum possible growth rate}
 }
 \value{
-a list of vectors of dates
+a list of vectors of segment cut dates
 }
 \description{
 Initial Chronology for initializing MCMC sampler

@@ -2,6 +2,8 @@
 
 export(carbonContent)
 export(generateInitial)
+export(growth.prior.gamma)
+export(growth.prior.uniform)
 export(growthRate)
 export(metropolisDate)
 importFrom(coda,mcmc)

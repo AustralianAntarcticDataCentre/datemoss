@@ -11,7 +11,7 @@ represent
 \code{F14C.sigma} \tab FIX ME. \cr
 \code{D14C} \tab FIX ME. \cr
 \code{F14C.sigma} \tab FIX ME. \cr
-\code{PMC} \tab FIX ME.
+\code{PMC} \tab Percent modern carbon.
 }}
 \source{
 Hua, Q., Barbetti, M. & Rakowski, A. Z. (2013).
