@@ -130,7 +130,7 @@ generateInitial <- function(lengths,tmin,tmax,chains=1L,max.growth=NULL) {
 ##' @export
 metropolisDate <- function(ts.init,tmin,
                            len,pmc,Year,PMC,
-                           sigma=4,iters=2000L,thin=25L,
+                           iters=2000L,thin=25L,
                            chains=if(is.list(ts.init)) length(ts.init) else 1L,
                            log.prior=NULL,alpha=0.01,beta=0.01,
                            verbose=interactive()) {
@@ -190,7 +190,7 @@ metropolisDate <- function(ts.init,tmin,
 
         ## Gibbs sample for sigma
         r <- pmc-segmentPMC(ts)
-        tau <- rgamma(1,alpha+(n-1)/2,beta+sum(r^2))
+        tau <- rgamma(1,alpha+(n-1)/2,beta+sum(r^2)/2)
         sigma <- 1/sqrt(tau)
 
         ## Red-black update - update the times in two interleaved sets
