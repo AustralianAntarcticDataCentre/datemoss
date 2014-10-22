@@ -156,6 +156,8 @@ metropolisDate <- function(ts.init,tmin,
   ## Set up initial times
   ts.init <- rep(if(is.list(ts.init)) ts.init else list(ts.init),length.out=chains)
   n <- length(ts.init[[1L]])
+  pmc.na <- is.na(pmc)
+  m <- sum(!pmc.na)
 
   ## List of chains
   ch.times <- vector(mode="list",chains)
@@ -189,8 +191,8 @@ metropolisDate <- function(ts.init,tmin,
       for(k3 in seq_len(thin)) {
 
         ## Gibbs sample for sigma
-        r <- pmc-segmentPMC(ts)
-        tau <- rgamma(1,alpha+(n-1)/2,beta+sum(r^2)/2)
+        r <- ifelse(pmc.na,0,pmc-segmentPMC(ts))
+        tau <- rgamma(1,alpha+m/2,beta+sum(r^2)/2)
         sigma <- 1/sqrt(tau)
 
         ## Red-black update - update the times in two interleaved sets
@@ -399,7 +401,7 @@ growthRate <- function(times,lengths) {
 ##' @return a coda object describing the growth rates
 ##' @importFrom coda mcmc mcmc.list thin
 ##' @export
-carbonContent <- function(times,Year,PMC) {
+fittedCarbon <- function(times,Year,PMC) {
 
   ## Integrate calibration carbon concentrations by trapezoidal rule,
   ## and construct interpolator

@@ -2,7 +2,7 @@
 
 S3method(quantile,mcmc)
 S3method(quantile,mcmc.list)
-export(carbonContent)
+export(fittedCarbon)
 export(generateInitial)
 export(growth.prior.gamma)
 export(growth.prior.uniform)

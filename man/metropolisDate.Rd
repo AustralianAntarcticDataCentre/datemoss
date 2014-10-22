@@ -4,7 +4,7 @@
 \alias{metropolisDate0}
 \title{Estimate segment dates}
 \usage{
-metropolisDate(ts.init, tmin, len, pmc, Year, PMC, sigma = 4, iters = 2000L,
+metropolisDate(ts.init, tmin, len, pmc, Year, PMC, iters = 2000L,
   thin = 25L, chains = if (is.list(ts.init)) length(ts.init) else 1L,
   log.prior = NULL, alpha = 0.01, beta = 0.01, verbose = interactive())
 
@@ -29,8 +29,6 @@ carbon measurement}
 
 \item{PMC}{calibration data - percent modern carbon}
 
-\item{sigma}{standard deviation of PMC errors}
-
 \item{iters}{number of samples to draw.}
 
 \item{thin}{rate at which to thin samples.}
@@ -46,6 +44,8 @@ lengths.}
 \item{beta}{rate parameter for the Gamma prior for tau}
 
 \item{verbose}{report progress at prompt?}
+
+\item{sigma}{standard deviation of PMC errors}
 }
 \value{
 \code{metropolisDate0} returns a list containing a coda
