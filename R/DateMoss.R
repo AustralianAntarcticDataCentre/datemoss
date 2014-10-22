@@ -240,8 +240,8 @@ growthRate <- function(times,lengths) {
 
   coda <- function(tm) {
     tm <- as.array(tm)
-    dt <- t(tm[,-1L]-tm[,-ncol(tm)])
-    growth <- t(lengths/dt)
+    dt <- tm[,-1L]-tm[,-ncol(tm)]
+    growth <- t(lengths/t(dt))
     colnames(growth) <- paste0("growth",seq_len(ncol(growth)))
     mcmc(growth,start=start(times),thin=thin(times))
   }
@@ -345,8 +345,8 @@ growth.prior.gamma <- function(mean,sd,shape=(mean/sd)^2,rate=mean/sd^2) {
 
 ##' Quantiles from a coda object
 ##'
-##' Converts an mcmc or mcmc.list object to a matrix and applies
-##' quantile.
+##' Converts an \code{mcmc} or \code{mcmc.list} object to a matrix and
+##' applies quantile.
 ##'
 ##' @title Quantiles
 ##' @param x a coda object
@@ -359,6 +359,7 @@ quantile.mcmc <- function(x,...) {
 }
 
 ##' @rdname quantile.mcmc
+##' @importFrom stats quantile
 ##' @export
 quantile.mcmc.list <- function(x,...) {
   t(apply(do.call(rbind,x),2,quantile,...))
