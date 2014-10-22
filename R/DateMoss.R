@@ -60,7 +60,7 @@ NULL
 ##' @param max.growth the maximum possible growth rate
 ##' @return a list of vectors of segment cut dates
 ##' @export
-generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
+generateInitial <- function(lengths,tmin,tmax,chains=1L,max.growth=NULL) {
   n <- length(lengths)
 
   ## The minimum time interval for each segment
@@ -106,7 +106,7 @@ generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
 ##' @param Year calibration data - (fractional) year of atmospheric
 ##' carbon measurement
 ##' @param PMC calibration data - percent modern carbon
-##' @param sigma standard deviation of C14 measurement errors (FIX
+##' @param sigma standard deviation of PMC measurement errors (FIX
 ##' description)
 ##' @param iters number of samples to draw.
 ##' @param thin rate at which to thin samples.
@@ -121,7 +121,7 @@ generateInitial <- function(lengths,tmin,tmax,chains=1,max.growth=NULL) {
 metropolisDate <- function(ts.init,tmin,
                            ls,cs,Year,PMC,
                            sigma=4,iters=2000L,thin=25L,
-                           chains=if(is.list(ts.init)) length(ts.init) else 1,
+                           chains=if(is.list(ts.init)) length(ts.init) else 1L,
                            log.prior=NULL,
                            verbose=interactive()) {
 
@@ -131,11 +131,11 @@ metropolisDate <- function(ts.init,tmin,
 
   ## Integrate calibration carbon concentrations by trapezoidal rule,
   ## and construct interpolator
-  IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1]+PMC[-length(PMC)])/2)))
+  IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1L]+PMC[-length(PMC)])/2)))
 
-  ## Given the segment end times, calculate the expected average C14
+  ## Given the segment end times, calculate the expected average PMC
   ## in each segment
-  segmentC14 <- function(ts) diff(IPMC(ts))/diff(ts)
+  segmentPMC <- function(ts) diff(IPMC(ts))/diff(ts)
 
 
   ## Install uniform prior when none is given
@@ -145,13 +145,13 @@ metropolisDate <- function(ts.init,tmin,
 
   ## Set up initial times
   ts.init <- rep(if(is.list(ts.init)) ts.init else list(ts.init),length.out=chains)
-  n <- length(ts.init[[1]])
+  n <- length(ts.init[[1L]])
 
   ## List of chains
   ch.times <- vector(mode="list",chains)
 
   ## PARALLEL - parallelize over this loop
-  for(k1 in 1:chains) {
+  for(k1 in seq_len(chains)) {
     ## Allocate storage for this chain
     ch.ts <- matrix(0,iters,n)
 
@@ -165,7 +165,7 @@ metropolisDate <- function(ts.init,tmin,
       flush.console()
     }
 
-    for(k2 in 1:iters) {
+    for(k2 in seq_len(iters)) {
 
       ## Update iteration count
       if(verbose && k2%%100==0) {
@@ -174,27 +174,27 @@ metropolisDate <- function(ts.init,tmin,
         flush.console()
       }
 
-      for(k3 in 1:thin) {
+      for(k3 in seq_len(thin)) {
 
         ## Red-black update - update the times in two interleaved sets
-        for(rb in 1:2) {
+        for(rb in seq_len(2L)) {
 
           ## Contribution to log posterior from each segment
           logps <- log.prior(ts,ls)
-          logps <- logps + ifelse(is.na(cs),0,dnorm(cs,segmentC14(ts),sigma,log=T))
+          logps <- logps + ifelse(is.na(cs),0,dnorm(cs,segmentPMC(ts),sigma,log=T))
 
           ## Indices to update
-          is <- seq.int(rb,n-1,by=2)
+          is <- seq.int(rb,n-1L,by=2L)
 
           ## New proposal
           lwr <- c(tmin,ts)[is]
-          upr <- ts[is+1]
+          upr <- ts[is+1L]
           ts.new <- ts
           ts.new[is] <- runif(length(is),lwr,upr)
 
           ## Contribution to log posterior from each segment of proposal
           logps.new <- log.prior(ts.new,ls)
-          logps.new <- logps.new + ifelse(is.na(cs),0,dnorm(cs,segmentC14(ts.new),sigma,log=T))
+          logps.new <- logps.new + ifelse(is.na(cs),0,dnorm(cs,segmentPMC(ts.new),sigma,log=T))
 
           ## Metropolis-Hastings rule - which proposals are kept?
           logp.is <- c(0,logps)[is]+logps[is]
@@ -210,14 +210,14 @@ metropolisDate <- function(ts.init,tmin,
     }
 
     ## Store this chain's samples
-    colnames(ch.ts) <- paste0("time",1:n)
+    colnames(ch.ts) <- paste0("time",seq_len(n))
     ch.times[[k1]] <- ch.ts
     if(verbose) cat("\n")
   }
 
   ## Convert to a list of coda objects
-  if(chains==1) {
-    mcmc(ch.times[[1]],start=thin,thin=thin)
+  if(chains==1L) {
+    mcmc(ch.times[[1L]],start=thin,thin=thin)
   } else {
     do.call(mcmc.list,lapply(ch.times,mcmc,start=thin,thin=thin))
   }
@@ -240,9 +240,9 @@ growthRate <- function(times,lengths) {
 
   coda <- function(tm) {
     tm <- as.array(tm)
-    dt <- t(tm[,-1]-tm[,-ncol(tm)])
+    dt <- t(tm[,-1L]-tm[,-ncol(tm)])
     growth <- t(lengths/dt)
-    colnames(growth) <- paste0("growth",1:ncol(growth))
+    colnames(growth) <- paste0("growth",seq_lent(ncol(growth)))
     mcmc(growth,start=start(times),thin=thin(times))
   }
 
@@ -271,18 +271,18 @@ carbonContent <- function(times,Year,PMC) {
   ## and construct interpolator
   PMC <- PMC[order(Year)]
   Year <- Year[order(Year)]
-  IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1]+PMC[-length(PMC)])/2)))
+  IPMC <- approxfun(Year,cumsum(c(0,diff(Year)*(PMC[-1L]+PMC[-length(PMC)])/2)))
 
-  ## Given the segment end times, calculate the expected average C14
+  ## Given the segment end times, calculate the expected average PMC
   ## in each segment
-  segmentC14 <- function(ts) diff(IPMC(ts))/diff(ts)
+  segmentPMC <- function(ts) diff(IPMC(ts))/diff(ts)
 
 
   coda <- function(tm) {
     tm <- as.array(tm)
-    pmc <- matrix(0,nrow(tm),ncol(tm)-1)
-    for(k in 1:nrow(tm)) pmc[k,] <- segmentC14(tm[k,])
-    colnames(pmc) <- paste0("PMC",1:ncol(pmc))
+    pmc <- matrix(0,nrow(tm),ncol(tm)-1L)
+    for(k in seq_len(nrow(tm))) pmc[k,] <- segmentPMC(tm[k,])
+    colnames(pmc) <- paste0("PMC",seq_len(ncol(pmc)))
     mcmc(pmc,start=start(times),thin=thin(times))
   }
 
@@ -291,4 +291,7 @@ carbonContent <- function(times,Year,PMC) {
   else
     coda(times)
 }
+
+
+
 
