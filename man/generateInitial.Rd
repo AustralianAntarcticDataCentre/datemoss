@@ -31,7 +31,7 @@ The user must provide the vector \code{lengths} containing the
 continuous sequence of segment lengths in timewise order, the
 earliest possible date \code{tmin} and the final date \code{tmax}
 (usually the acquisition date).  If in addition the user specifies
-a maximal growth rate then dates will be generated such that the
+a maximal growth rate then cut dates will be generated such that the
 growth rate never exceeds this upper limit, and if this is not
 possible the function will raise an error.
 }
