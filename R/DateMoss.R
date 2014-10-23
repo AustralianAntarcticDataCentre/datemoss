@@ -501,3 +501,80 @@ quantile.mcmc.list <- function(x,...) {
   t(apply(do.call(rbind,x),2,quantile,...))
 }
 
+
+
+
+##' Read sample data from an Excel file
+##'
+##' This function assumes the data are stored as one contigous block
+##' of cells in an Excel spreadsheet, starting at the cell address
+##' \code{address}.  The function reads the largest contiguous block
+##' that starts at this address and includes every column that has a
+##' heading and every row for which the first three columns are not
+##' all blank.  The function then checks that the first few columns
+##' have the names specified by \code{check.names}.
+##'
+##' The function also searches for the date the data were collected in
+##' a cell below the cell containing the text "Date collected". This
+##' date is extracted and added to the data.frame as an attribute.
+##'
+##' If \code{sheetname} is NULL, the workbook must consist of a single
+##' sheet.
+##'
+##' @title Read Excel file
+##' @param filename the Excel file to read
+##' @param sheetname the name of the worksheet to read.  If NULL, the
+##' workbook must contain only one sheet.
+##' @param address the cell address of the first header cell
+##' @param check.names the names of the first few columns of data.
+##' @return a dataframe of data
+##' @importFrom XLConnect loadWorkbook getSheets readWorksheetFromFile
+##' @export
+readXLSample <- function(filename,sheetname=NULL,address="B4",
+                         check.names=c("Lab ID", "Moss species", "Sample ID",
+                           "Depth (mm)","Segment length (mm)","pMC")) {
+
+  trim <- function(s) gsub("^\\s+|\\s+$","",s)
+
+  ## If no sheet specified, workbook must have one sheet
+  if(is.null(sheetname) || nchar(sheetname)==0) {
+    workbook <- loadWorkbook(filename)
+    sheetname <- getSheets(workbook)
+  }
+  if(length(sheetname)!=1) stop("Sheet is not uniquely identified")
+
+  ## Decode excel cell address to (i,j)
+  address <- trim(toupper(address[1]))
+  if(length(grep("^([A-Z]+)([0-9]+)$",address))!=1) stop("Invalid cell address")
+  i <- as.integer(gsub("^([A-Z]+)([0-9]+)$","\\2",address))
+  letters <- gsub("^([A-Z]+)([0-9]+)$","\\1",address)
+  j <- sum((utf8ToInt(letters)-64)*(26^rev(seq_len(nchar(letters))-1)))
+
+  ## Read whole sheet
+  fullsheet <- sheet <- readWorksheetFromFile(filename,sheet=sheetname,header=FALSE)
+  ## Extract header and check column names
+  header <- trim(sheet[i,j:ncol(sheet)])
+  if(!all(check.names == header[seq_along(check.names)]))
+    stop("Header names do not match check.names argument")
+
+  ## Extract data
+  sheet <- sheet[(i+1):nrow(sheet),j:ncol(sheet)]
+  ## Trim to first blank row
+  nrows <- min(nrow(sheet),which(apply(sheet[,1:3],1,function(r) all(is.na(r))))-1)
+  sheet <- sheet[seq_len(nrows),!is.na(header)]
+  ## Set column names and convert columns to appropriate data type
+  colnames(sheet) <- make.names(gsub(" |_|\\)|\\(","",header[!is.na(header)]))
+  for(k in seq_len(ncol(sheet))) sheet[,k] <- type.convert(sheet[,k])
+
+  ## Extract aquisition date and add as attribute
+  fullsheet <- tolower(trim(as.matrix(fullsheet)))
+  k <- which(fullsheet=="date collected",arr.ind=TRUE)
+  if(nrow(k)!=1) stop("Unique collection date not found in data sheet")
+  acquisition <- strptime(fullsheet[k+c(1,0)],format=getOption("XLConnect.dateTimeFormat"))
+  acquisition <- 1900+acquisition$year+acquisition$yday/365.25
+  attr(sheet,"acquisition_date") <- acquisition
+
+  ## Reverse the sheet.
+  sheet[rev(seq_len(nrow(sheet))),]
+}
+
