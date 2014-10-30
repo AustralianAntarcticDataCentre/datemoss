@@ -78,6 +78,6 @@ contributions of each segment to the log prior.  This function
 takes two arguments, \code{ts} a vector of the (n+1) segment
 endpoint times and \code{len} the lengths of the n segments.  This
 function must compute the log of the (non-normalized) contributions
-to prior from each segment.
+to the prior from each segment.
 }
 

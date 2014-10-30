@@ -7,10 +7,10 @@
 represent
 \tabular{rl}{
 \code{Year} \tab Year of measurement. \cr
-\code{F14C} \tab FIX ME. \cr
-\code{F14C.sigma} \tab FIX ME. \cr
-\code{D14C} \tab FIX ME. \cr
-\code{F14C.sigma} \tab FIX ME. \cr
+\code{F14C} \tab Fraction of modern carbon 14. \cr
+\code{F14C.sigma} Standard deviation on F14C. \cr
+\code{D14C} \tab Delta 14V. \cr
+\code{F14C.sigma} \tab Standard deviation on D14C. \cr
 \code{PMC} \tab Percent modern carbon.
 }}
 \source{

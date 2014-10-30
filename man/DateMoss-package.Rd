@@ -8,6 +8,6 @@ Provides facilities for estimating chronologies and growth rates
 of moss (or similar) samples based on radiocarbon dating.
 }
 \author{
-B. Raymond, S. Wotherspoon
+S. Wotherspoon, B. Raymond, S. Hall
 }
 
