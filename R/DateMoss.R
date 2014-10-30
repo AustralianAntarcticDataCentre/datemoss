@@ -5,7 +5,7 @@
 #'
 #' @name DateMoss-package
 #' @docType package
-#' @author B. Raymond, S. Wotherspoon
+#' @author S. Wotherspoon, B. Raymond, S. Hall
 NULL
 
 
@@ -24,10 +24,10 @@ NULL
 ##' represent
 ##' \tabular{rl}{
 ##' \code{Year} \tab Year of measurement. \cr
-##' \code{F14C} \tab FIX ME. \cr
-##' \code{F14C.sigma} \tab FIX ME. \cr
-##' \code{D14C} \tab FIX ME. \cr
-##' \code{F14C.sigma} \tab FIX ME. \cr
+##' \code{F14C} \tab Fraction of modern carbon 14. \cr
+##' \code{F14C.sigma} Standard deviation on F14C. \cr
+##' \code{D14C} \tab Delta 14V. \cr
+##' \code{F14C.sigma} \tab Standard deviation on D14C. \cr
 ##' \code{PMC} \tab Percent modern carbon.
 ##' }
 ##' @source Hua, Q., Barbetti, M. & Rakowski, A. Z. (2013).
@@ -99,7 +99,7 @@ generateInitial <- function(lengths,tmin,tmax,chains=1L,max.growth=NULL) {
 ##' takes two arguments, \code{ts} a vector of the (n+1) segment
 ##' endpoint times and \code{len} the lengths of the n segments.  This
 ##' function must compute the log of the (non-normalized) contributions
-##' to prior from each segment.
+##' to the prior from each segment.
 ##'
 ##' @title Estimate segment dates
 ##' @param ts.init a vector or a list of vectors of initial date
