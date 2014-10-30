@@ -564,7 +564,9 @@ readXLSample <- function(filename,sheetname=NULL,address="B4",
   sheet <- sheet[seq_len(nrows),!is.na(header)]
   ## Set column names and convert columns to appropriate data type
   colnames(sheet) <- make.names(gsub(" |_|\\)|\\(","",header[!is.na(header)]))
-  for(k in seq_len(ncol(sheet))) sheet[,k] <- type.convert(sheet[,k])
+  ## only convert column if it is of character type. Sometimes (specifically if the header cell is empty)
+  ##  the column may already be numeric and attempting to apply type.convert will result in an error
+  for(k in seq_len(ncol(sheet))) { if (is.character(sheet[,k])) sheet[,k] <- type.convert(sheet[,k]) }
 
   ## Extract aquisition date and add as attribute
   fullsheet <- tolower(trim(as.matrix(fullsheet)))
