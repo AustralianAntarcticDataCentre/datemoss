@@ -580,3 +580,35 @@ readXLSample <- function(filename,sheetname=NULL,address="B4",
   sheet[rev(seq_len(nrow(sheet))),]
 }
 
+##' Smooth calibration curve
+##'
+##' The function \code{smoothCalibration} smooths
+##' an atmospheric carbon curve. This function is experimental.
+##'
+##' A smoothed calibration curve can be used to provide an approximation for the
+##' effect of having multiple strands in a sample of moss, each with
+##' slightly different growth rates or physical alignment within the sample.
+##' Currently the only method provided is "rgr", which
+##' effectively assumes that the sample is comprised of multiple strands, each
+##' with a constant (random) growth rate offset.
+##'
+##' @title Calibration Curve Smoothing
+##' @param Year calibration data - vector of (fractional) year of atmospheric carbon measurement
+##' @param PMC calibration data - vector of percent modern carbon values
+##' @param smoothing.level (scalar) the level of smoothing to apply. The interpretation of this value depends on the method used
+##' @param method string specifying the smoothing method to use. Currently only "rgr"
+##' @return a data frame of smoothed carbon values with column names "Year" and "PMC"
+##' @export
+smoothCalibration <- function(Year,PMC,smoothing.level,method="rgr") {
+    method=match.arg(tolower(method),c("rgr"))
+    switch(method,
+           rgr={ groff=rnorm(1000,sd=smoothing.level) ## draw 1000 random growth rate offsets
+                 groff=groff[abs(groff)<1] ## these are treated as a fraction, so can only keep those with abs value less than 1
+                 ## this is a bit rubbish, can surely be done better
+                 af=approxfun(Year,PMC)
+                 npts=length(Year)
+                 oc=sapply(groff,function(z){ af(seq(npts-1,0,by=-1)*z+Year) })
+                 data.frame(Year=Year,PMC=apply(oc,1,mean))
+             }
+           )
+}
