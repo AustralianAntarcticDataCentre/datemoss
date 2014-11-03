@@ -486,7 +486,7 @@ growth.prior.gamma <- function(mean,sd,shape=(mean/sd)^2,rate=mean/sd^2) {
 ##'
 ##' @title Quantiles
 ##' @param x a coda object
-##' @param ... further arguments passed to quantile
+##' @param ... further arguments passed to \code{quantile}
 ##' @return An array of quantiles
 ##' @importFrom stats quantile
 ##' @export
@@ -500,8 +500,6 @@ quantile.mcmc <- function(x,...) {
 quantile.mcmc.list <- function(x,...) {
   t(apply(do.call(rbind,x),2,quantile,...))
 }
-
-
 
 
 ##' Read sample data from an Excel file
